@@ -3,6 +3,7 @@ import "../../global.css";
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import * as Sentry from "@sentry/react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 Sentry.init({
   dsn: "https://1911a0eb55f05183f405ec2d4eed6e45@o4510959254110208.ingest.us.sentry.io/4510964704083968",
@@ -26,10 +27,12 @@ Sentry.init({
 export default function RootLayout() {
   return (
     <ClerkProvider tokenCache={tokenCache}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(tabs)" />
-      </Stack>
+      <GestureHandlerRootView className="flex-1">
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(tabs)" />
+        </Stack>
+      </GestureHandlerRootView>
     </ClerkProvider>
   );
 }
