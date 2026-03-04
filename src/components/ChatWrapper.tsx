@@ -5,6 +5,8 @@ import { FullScreenLoader } from "./FullScreenLoader";
 import { Chat, OverlayProvider, useCreateChatClient } from "stream-chat-expo";
 import { studyBuddyTheme } from "@/lib/theme";
 
+import * as Sentry from "@sentry/react-native";
+
 const STREAM_API_KEY = process.env.EXPO_PUBLIC_STREAM_API_KEY!;
 
 const syncUserToStream = async (user: UserResource) => {
@@ -44,13 +46,23 @@ const ChatClient = ({
   }, [user]);
 
   const tokenProvider = async () => {
-    const response = await fetch("/api/token", {
-      method: "POST",
-      headers: { "Context-Type": "application/json" },
-      body: JSON.stringify({ userId: user.id }),
-    });
-    const data = await response.json();
-    return data.token;
+    try {
+      const response = await fetch("/api/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id }),
+      });
+      const data = await response.json();
+      return data.token;
+    } catch (error) {
+      Sentry.logger.error("Failed to get Stream chat token", {
+        userId: user.id,
+        message: error instanceof Error ? error.message : String(error),
+      });
+      Sentry.captureException(error, {
+        extra: { userId: user.id, hook: "tokenProvider" },
+      });
+    }
   };
 
   const chatClient = useCreateChatClient({

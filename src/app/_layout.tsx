@@ -20,7 +20,13 @@ Sentry.init({
   // Configure Session Replay
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1,
-  integrations: [Sentry.mobileReplayIntegration()],
+  integrations: [
+    Sentry.mobileReplayIntegration({
+      maskAllImages: false,
+      maskAllVectors: false,
+      maskAllText: false,
+    }),
+  ],
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // spotlight: __DEV__,
